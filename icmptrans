@@ -1,12 +1,37 @@
 # #!/usr/bin/env python3
 
-from icmplib import multiping
+#Script Name: icmptrans
+#Purpose: Check status of systems
+#Example usage: To check if a web server is working
+#Expected output: System status with timestamp
+#variables: answer
 
->>> hosts = multiping(['10.0.0.5', '127.0.0.1', '::1'])
+from icmplib import ping, multiping, resolve, traceroute
+import datetime
 
->>> for host in hosts:
-...     if host.is_alive:
-...         # See the Host class for details
-...         print(f'{host.address} is up!')
-...     else:
-...         print(f'{host.address} is down!')
+answer = ping("8.8.8.8", count=1, interval=2, timeout=8)
+
+if answer == 0:
+    print (target, "is up as", stamp)
+else:
+    print (target, "is down as", stamp)
+
+
+
+
+
+
+
+#----alternative-----
+# import time
+# import datetime
+# import os
+
+# stamp = datetime.datetime.now()
+# target = "8.8.8.8"
+# answer = os.system("ping -c 1 " + target)
+
+# if answer == 0:
+#     print (target, "is up as", stamp)
+# else:
+#     print (target, "is down as", stamp)
