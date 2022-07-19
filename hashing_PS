@@ -1,0 +1,11 @@
+$string = [System.IO.MemoryStream]::new()
+#sets variable to save string to memory
+$content = [System.IO.StreamWriter]::new($string)
+#set the writing part to a variable
+$content.Write("That was fast")
+#input for the variable content
+$content.Flush()
+#pass the content
+$string.Position = 0
+Get-FileHash -InputStream $string -Algorithm MD5 
+#treats the string as a file and hash it using MD5
