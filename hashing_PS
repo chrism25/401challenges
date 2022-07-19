@@ -9,5 +9,3 @@ $content.Flush()
 $string.Position = 0
 Get-FileHash -InputStream $string -Algorithm MD5 
 #treats the string as a file and hash it using MD5
-
-https://github.com/chrism25/401challenges/blob/main/hashing_PS
