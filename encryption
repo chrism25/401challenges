@@ -10,6 +10,16 @@
 
 from cryptography.fernet import Fernet
 
+def gen():
+    key = Fernet.generate_key()
+    # Generates key
+    with open("master", "wb") as key_file:
+        key_file.write(key)
+
+def load():
+    # Loads the key from directory 'master'
+    return open("key.key", "rb").read()
+
 def menu():
     print("1) Encrypt File")
     print("2) Decrypt File")
@@ -17,20 +27,9 @@ def menu():
     print("4) Decrypt phrase")
     print("5) Quit\n")
 
-def gen():
-    # Generates a key and save it into a file
-    key = Fernet.generate_key()
-    with open("nothing", "wb") as key_file:
-        key_file.write(key)
-
-def load():
-    # Loads the key from the current directory named `nothing`
-    return open("nothing", "rb").read()
-
-# Main
-
-# Generate and write a new key
 gen()
+# Generates new key
+***********
 
 # load the previously generated key
 key = load()
@@ -47,3 +46,13 @@ encrypted = f.encrypt(message)
 
 # Print how it looks
 print("Ciphertext is "+encrypted.decode('utf-8'))
+
+#####
+# value of key is assigned to a variable
+f = Fernet(key)
+  
+# the plaintext is converted to ciphertext
+token = f.encrypt(b"welcome to geeksforgeeks")
+  
+# display the ciphertext
+print(token)
