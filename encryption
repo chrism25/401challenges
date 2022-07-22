@@ -11,11 +11,11 @@
 from cryptography.fernet import Fernet
 
 def menu():
-    print("1) Encrypt File\n")
-    print("2) Decrypt File\n")
-    print("3) Encrypt Message\n")
-    print("4) Decrypt Message\n")
-    print("5) QUIT\n")
+    print("1) Encrypt File")
+    print("2) Decrypt File")
+    print("3) Encrypt phrase")
+    print("4) Decrypt phrase")
+    print("5) Quit\n")
 
 def gen():
     # Generates a key and save it into a file
