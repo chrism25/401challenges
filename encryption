@@ -4,14 +4,13 @@
 #Purpose: Encrypt of data
 #Example usage: protect the integrity of data
 #Expected output: encrypted data
-#variables: ans, key, string, enc, dec, file, check
-
-###stil in progress####
+#variables: ans, key, string, enc, dec, file, file_data, file_data
 
 from cryptography.fernet import Fernet
 import os.path
 
 def menu():
+    print()
     print("****** MENU ******\n")
     print("1) Encrypt File")
     print("2) Decrypt File")
@@ -21,51 +20,46 @@ def menu():
 menu()
 ans = int(input("What would you like to do?: "))
 #Ask user for input restricted to integers
-
 key = Fernet.generate_key()
-#generates and saves key into a file
+#generates key
 
 def gen():
     with open("master", "wb") as key_file:
         key_file.write(key)
-    #saves key under file "key_file" on directory"master" (wb=writing binary)
+        #saves key under file "master" (wb=writing binary)
     
 def load():
 #loads key everytime we need to de/encrypt 
     return open("master", "rb").read()
-    #Loads key from directory'master' (rb=read binary)
+    #Loads key from file 'master' (rb=read binary)
 
-******************************
-
-# def check():
-# #Checks if file exists
-#     path = input("Please provide file path: ")
-#     #ask user for the file path
-#     if os.path.exists(path) == True:    
-#        print ("Great, I'll take care of it")
-#     else:
-#        print("File doesn't exist there, please check path")
-#        path
-# check()
-# def check()
-# #checks if the file exists
-#     path = input("Please provide file path: ")
-#     if os.path.isfile(path) == False    
-#         print ("wrong path")
-#     else  
-
-# def en_file()
-#     gen()
-#     load()
-#     f = Fernet(key)
-#     file = ()
-#     with open("88888", "rb") as read_file:
-#      = file.read()
-    
-#     enc = f.encrypt(key_file)
-    
-****************************
-    
+def en_file(path):
+#encrypts file
+    load()
+    f = Fernet(key)
+    #begins fernet
+    with open(path, "rb") as file:
+        file_data = file.read()
+        #reads all data an places is in a variable
+    enc = f.encrypt(file_data)
+    #encrypts the data an places it in a variable
+    with open(path, "wb") as file:
+        file.write(enc)
+        #overwrites orginal with encrypted data
+    print ("\nHere is your secret: ", enc.decode())
+        
+def dec_file(key, path):
+#decrypts file
+    load()
+    f = Fernet(key)
+    with open(path, "rb") as file:
+        enc = file.read()
+    dec = f.decrypt(enc)
+    #decrypts data and places is it into a variable
+    with open(path, "wb") as file:
+        file.write(dec)
+    print("\nUse with caution: ", dec.decode())
+        
 def en_string():
 #encrypts string
     gen()
@@ -73,7 +67,6 @@ def en_string():
     string = input("What would you like to encrypt? ").encode()
     #ask for input and removes byte format
     f = Fernet(key)
-    #begins fernet
     enc = f.encrypt(string).decode()
     #encrypts message
     print ("Here you go:", enc)
@@ -86,23 +79,31 @@ def de_string():
     f = Fernet(key)
     dec = f.decrypt(string).decode()
     #decrypts message
-    print ("Here you go:", dec)
+    print ("Here you go: ", dec)
     
 while ans !=5:    
-    if ans == "1" or "2"
-        print("not yet")
-  
-    
-    elif ans == 3:    
+#5 closes loop
+    if ans == "1" or "2":
+    #if the input is 1 or 2
+        path = input("\nPlease provide file path: ")
+        #ask user for the file path
+        if os.path.exists(path) == True:    
+            #checks the path for the variable and if is true:
+            if ans == 1:
+                en_file(path)
+            else:
+                dec_file(key, path)
+        else: 
+            print("\nFile doesn't exist there, please check path")             
+    elif ans == "3":    
         en_string()
-    elif ans == 4:
+    elif ans == "4":
         de_string()
     else:
-        print ("Choose among the options please")        
+        print ("\nChoose among the options please")        
 
     print ()
     menu()
     #brings menu again
     ans = int(input("something else?: "))
-
-#/home/vmubuntu/gits/401challenges/test.txt
+    #So user can continue using the script after a task
