@@ -17,40 +17,92 @@ def menu():
     print("3) Encrypt phrase")
     print("4) Decrypt phrase")
     print("5) Quit\n")
-menu()
-ans = int(input("What would you like to do?: "))
-#Ask user for input restricted to integers
-key = Fernet.generate_key()
-#generates key
+    ans = int(input("What would you like to do?: "))
+    #Ask user for input restricted to integers
+    return ans
 
-def gen():
-    with open("master", "wb") as key_file:
-        key_file.write(key)
-        #saves key under file "master" (wb=writing binary)
+#Triggers a response depending on the input
+def selection(ans):
+    if ans == 1 or ans == 2:
+    #encrypts or decrypts file
+        path = input("\nPlease provide file name: ")
+        #ask user for the file path
+        if check(path) == True:    
+        #check files existence on path provided
+            if ans == 1:
+            #encrypts file
+                gen()
+                key = load()
+                en_file(path, key)
+                #encrypts file
+            else:
+            #decrypts file
+                key = load()
+                dec_file(path, key)
+        else: 
+            print("\nFile doesn't exist in this folder, please check the name")             
     
-def load():
-#loads key everytime we need to de/encrypt 
-    return open("master", "rb").read()
-    #Loads key from file 'master' (rb=read binary)
+    elif ans == 3:
+    #encrypts message    
+        gen()
+        enc_key = load()
+        #set load into a variable        
+        enc = en_string(enc_key)
+        #encrypts message      
+        
+    elif ans == 4:
+    #decrypts message
+        enc_key = load()
+        #set load into a variable        
+        dec = dec_string(enc_key)
+        #decrypts message
+            
+    elif ans == 5:
+        exit()
+        
+    else:
+        print ("\nChoose among the options please")          
+     
+#checks file existance on path provided     
+def check(path):
+    return os.path.exists(path)
+    #checks for file existance
 
-def en_file(path):
+#Generates key and stores it
+def gen():
+    file_key = load()
+    if len(file_key) == 0:
+    #checks to see if file with key exists    
+        key = Fernet.generate_key()
+        #Generates key
+        with open("master", "wb") as key_file:
+        #Opens file "master" (wb=writing binary)    
+            key_file.write(key)
+            #Writes key on file
+    else:
+        pass        
+
+#loads key everytime we need to de/encrypt    
+def load():
+    return open("master", "rb").read()
+    #Loads key from file "master" (rb=read binary)
+
 #encrypts file
-    load()
+def en_file(path, key):
     f = Fernet(key)
     #begins fernet
     with open(path, "rb") as file:
         file_data = file.read()
-        #reads all data an places is in a variable
+        #Opens file to read
     enc = f.encrypt(file_data)
     #encrypts the data an places it in a variable
     with open(path, "wb") as file:
         file.write(enc)
         #overwrites orginal with encrypted data
     print ("\nHere is your secret: ", enc.decode())
-        
-def dec_file(key, path):
-#decrypts file
-    load()
+     
+#Decrypts file        
+def dec_file(path, key):
     f = Fernet(key)
     with open(path, "rb") as file:
         enc = file.read()
@@ -59,51 +111,28 @@ def dec_file(key, path):
     with open(path, "wb") as file:
         file.write(dec)
     print("\nUse with caution: ", dec.decode())
-        
-def en_string():
-#encrypts string
-    gen()
-    load()
-    string = input("What would you like to encrypt? ").encode()
+
+#encrypts string        
+def en_string(key):
+    string = input("\nWhat would you like to encrypt? ").encode()
     #ask for input and removes byte format
     f = Fernet(key)
     enc = f.encrypt(string).decode()
-    #encrypts message
+    #encrypts message and remobes "b"
     print ("Here you go:", enc)
     
-def de_string():
-#decrypts code
-    gen()
-    load()
+#decrypts code    
+def dec_string(key):
     string = input("What would you like to decrypt? ").encode()
     f = Fernet(key)
     dec = f.decrypt(string).decode()
     #decrypts message
     print ("Here you go: ", dec)
     
-while ans !=5:    
-#5 closes loop
-    if ans == "1" or "2":
-    #if the input is 1 or 2
-        path = input("\nPlease provide file path: ")
-        #ask user for the file path
-        if os.path.exists(path) == True:    
-            #checks the path for the variable and if is true:
-            if ans == 1:
-                en_file(path)
-            else:
-                dec_file(key, path)
-        else: 
-            print("\nFile doesn't exist there, please check path")             
-    elif ans == "3":    
-        en_string()
-    elif ans == "4":
-        de_string()
-    else:
-        print ("\nChoose among the options please")        
-
-    print ()
-    menu()
-    #brings menu again
-    ans = int(input("something else?: "))
-    #So user can continue using the script after a task
+#main function
+def main_func():
+    for i in range(6):
+    #Let the user use the menu up to 6 times at a time
+        ans = menu()
+        selection(ans)
+main_func()
