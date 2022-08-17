@@ -1,0 +1,108 @@
+#!/usr/bin/env python3
+
+#Script Name: Scapy_scan
+#Purpose: Scan target's ports and block of IDs
+#Example usage: Look for open ports, see listening devices
+#Expected output: Status of the device's ports, devices listening
+#variables:
+
+import ipaddress
+import random
+from scapy.all import ICMP, IP, sr1, TCP
+
+#target = "198.168.18.73"
+
+####Still in progress########
+
+def menu():
+    print ("\nwhat would you like to do?\n")
+    print ("1) TCP Port Range Scanner")
+    print ("2) IMCP Ping Sweep")
+    print ("3) Exit\n")
+    choice = input()
+    return choice
+
+def action(choice):    
+    if choice == "1":
+        port()
+         
+    elif choice == "2":
+        ping()
+    
+    elif choice == "3":
+        exit()
+        
+    else:
+        print ("Please choose among the options")
+        
+# sends SYN to defined ports from random ports
+def port():
+    port_range = (22, 23, 80, 443, 3389)
+    # ports to be scan
+    target = input("Please provide target IP: ")
+    # user inputs target host
+    print("Scaning ports, please wait...\n")
+        
+    for dst_port in port_range:
+        src_port = random.randint(1,65534)
+        # random source port
+        response = sr1(IP(dst=target)/TCP(sport=src_port,dport=dst_port,flags="S"),timeout=3,verbose=0)
+        # Parameters needed to send packets and receive respond
+        if response is None:
+        # if there is no response
+            print (f"{target}:{dst_port} is filtered (dropped)") 
+        
+        elif (response.haslayer(TCP)): 
+            if (response.getlayer(TCP).flags == 0x12):
+            # if the port is open and accepting requests
+                send_rst = sr1(IP(dst=target)/TCP(sport=src_port,dport=dst_port,flags="R"),timeout=3,verbose=0,)
+                # sends RST to close conection 
+                print (f"{target}:{dst_port} is open")
+            
+            elif (response.getlayer(TCP).flags == 0x14):
+            # if the port is closed
+                print (f"{target}:{dst_port} is closed")
+        
+        elif(response.haslayer(ICMP)):
+            if (int(response.getlayer(ICMP).type) == 3 and
+            int(response.getlayer(ICMP).code) in [1,2,3,9,10,13]):
+            # The port is filtering, not accepting TCP requests
+                print (f"{target}:{dst_port} is filtered (dropped)")
+                
+# Sends ping requests to identify status of the IPs                 
+def ping():
+    block = input("Please provide network block(*.*.*.*/24 format): ") 
+    # User provides network block
+    ip_list = ipaddress.IPv4Network(block)
+    # Takes addresses out of the list on a clean format
+    count = 0
+    # count at 0 for open IPs
+    print("Pinging hosts please wait...\n")
+    
+    for host in ip_list:
+        if (host in (ip_list.network_address, ip_list.broadcast_address)):
+            continue
+        #Ignores broadcasting and network IP
+        response = sr1(IP(dst=str(host))/ICMP(), timeout=2, verbose=0)
+
+        if response is None:
+            print(f"{host} is down or unresponsive") 
+            
+        elif (int(response.getlayer(ICMP).type)==3 and
+        int(response.getlayer(ICMP).code) in [1,2,3,9,10,13]):
+            print(f"{host} is actively blocking ICMP traffic")
+        
+        else:
+            print(f"{host} is responding")
+            count += 1
+            #Adds a count for every responsive IP
+            
+    print(f"{count}/{ip_list.num_addresses} hosts are responding")
+
+#main function
+def main():
+    for i in range (5):
+    #Let the user use the menu up to 5 times at a time
+        choice = menu()
+        action(choice)
+main()
