@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
-#Script Name: encryption
-#Purpose: Encrypt of data
-#Example usage: protect the integrity of data
-#Expected output: encrypted data
+#Script Name: Scapy_scan
+#Purpose: Scan target's ports and block of IDs
+#Example usage: Look for open ports, see listening devices
+#Expected output: Status of the device's ports, devices listening
 #variables:
 
 import ipaddress
