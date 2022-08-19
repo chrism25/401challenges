@@ -1,34 +1,62 @@
 #!/usr/bin/env python3
 
 #Script Name: Scapy_scan
-#Purpose: Scan target's ports and block of IDs
-#Example usage: Look for open ports, see listening devices
-#Expected output: Status of the device's ports, devices listening
-#variables:
+#Purpose: Filters responsive IPs from a block and scan some of their ports
+#Example usage: Look for open ports on devices listening
+#Expected output: Status of some ports on devices listening
+#variables: block, ip_list, count, response, host, target, port_range, src_port, dst_port, send_rst
 
 import ipaddress
 import random
 from scapy.all import ICMP, IP, sr1, TCP
+              
+# Sends ping requests to identify status of the IPs                 
+def ping():
+    block = input("\nPlease provide network block(*.*.*.*/24 format): ") 
+    # User provides network block
+    ip_list = ipaddress.IPv4Network(block)
+    # Takes addresses out of the list on a clean format
+    count = 0
+    # count at 0 for open IPs
+    print("\nPinging hosts please wait...\n")
+    
+    for host in ip_list:
+        if (host in (ip_list.network_address, ip_list.broadcast_address)):
+            continue
+        # Ignores broadcasting and network IP
+        response = sr1(IP(dst=str(host))/ICMP(), timeout=2, verbose=0)
+        # Parameters needed to send packets and receive respond
+        if response is None:
+        # if there is no response    
+            print(f"{host} is down or unresponsive") 
+            
+        elif (int(response.getlayer(ICMP).type)==3 and
+        int(response.getlayer(ICMP).code) in [1,2,3,9,10,13]):
+        # IP is not accepting ICMP requests
+            print(f"{host} is actively blocking ICMP traffic")
+        
+        else:
+            print(f"{host} is responding")
+            count += 1
+            #Adds a count for every responsive IP
+                                    
+    print(f"{count}/{ip_list.num_addresses} hosts are responding")
+        
+    port(host)
+    # calls a function passing the "host" variable
 
-####Still in progress########
-
-#target = "198.168.18.73"
-      
 # sends SYN to defined ports from random ports
-def port():
+def port(target):
+# "Host" is threated as the "target" variable
     port_range = (22, 23, 80, 443, 3389)
     # ports to be scan
-    target = input("Please provide target IP: ")
-    # user inputs target host
-    print("Scaning ports, please wait...\n")
+    print("\nScaning ports, please wait...\n")
         
     for dst_port in port_range:
         src_port = random.randint(1,65534)
         # random source port
         response = sr1(IP(dst=target)/TCP(sport=src_port,dport=dst_port,flags="S"),timeout=3,verbose=0)
-        # Parameters needed to send packets and receive respond
         if response is None:
-        # if there is no response
             print (f"{target}:{dst_port} is filtered (dropped)") 
         
         elif (response.haslayer(TCP)): 
@@ -47,42 +75,5 @@ def port():
             int(response.getlayer(ICMP).code) in [1,2,3,9,10,13]):
             # The port is filtering, not accepting TCP requests
                 print (f"{target}:{dst_port} is filtered (dropped)")
-                
-# Sends ping requests to identify status of the IPs                 
-def ping():
-    block = input("Please provide network block(*.*.*.*/24 format): ") 
-    # User provides network block
-    
-    #block = input("new target") 
-    
-    ip_list = ipaddress.IPv4Network(block)
-    # Takes addresses out of the list on a clean format
-    count = 0
-    # count at 0 for open IPs
-    print("Pinging hosts please wait...\n")
-    
-    for host in ip_list:
-        if (host in (ip_list.network_address, ip_list.broadcast_address)):
-            continue
-        #Ignores broadcasting and network IP
-        response = sr1(IP(dst=str(host))/ICMP(), timeout=2, verbose=0)
 
-        if response is None:
-            print(f"{host} is down or unresponsive") 
-            
-        elif (int(response.getlayer(ICMP).type)==3 and
-        int(response.getlayer(ICMP).code) in [1,2,3,9,10,13]):
-            print(f"{host} is actively blocking ICMP traffic")
-        
-        else:
-            print(f"{host} is responding")
-            count += 1
-            #Adds a count for every responsive IP
-            
-            #new_target = host
-                        
-    print(f"{count}/{ip_list.num_addresses} hosts are responding")
-
-ping ()
-port ()
-#port (new_target)
+ping()
