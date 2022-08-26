@@ -4,13 +4,11 @@
 #Purpose: Scan target's ports and block of IDs
 #Example usage: Look for open ports, see listening devices
 #Expected output: Status of the device's ports, devices listening
-#variables:
+#variables: ip_list block send_rst response src_port dst_port, count
 
 import ipaddress
 import random
 from scapy.all import ICMP, IP, sr1, TCP
-
-#target = "198.168.18.73"
 
 def menu():
     print ("\nwhat would you like to do?\n")
