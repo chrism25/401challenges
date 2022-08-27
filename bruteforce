@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 
-#Script Name: Scapy_scan
-#Purpose: Scan target's ports and block of IDs
-#Example usage: Look for open ports, see listening devices
-#Expected output: Status of the device's ports, devices listening
-#variables:
+#Script Name: bruteforce
+#Purpose: checks a file line by line
+#Example usage: Iterate the file line by line, may be used to match it against a password
+#Expected output: List of strings in the file
+#variables: choice, path, file, lines, word, string, content
 
-#import re
 import time
 
 def menu():
@@ -59,44 +58,25 @@ def recognizer():
     path = input("\nNow file path to search for a match: ")
     #File to look through
     
-    #version 1
-    file = open(path, encoding = "ISO-8859-1")
-    lines = file.readline()
-    while lines:
-        lines = lines.rstrip()
-        word = lines
-        
-        if word == string:
+    f = open(path, 'r')
+    #opens the file for reading 
+    file = f.readlines()
+    #Reads all lines of the file at once
+    file.append("EOF")
+    for lines in file:
+        content = lines.rstrip()
+        #Empty spaces are removed from the list
+        if content == string:
+        #if the password inputs matches 
             print("Your password appears in the list")
-            lines = file.readline()
-        
-        else:
+            break
+        elif content == "EOF" and content != string:
             print("Your password is not in the list")
-            lines = file.readline()
-         
-    file.close()       
-    
-    #version 2
-    # file = open(path)
-    # for content in file.readlines():
-    #     if content == string:
-    #         print("Your password appears in the list")
-    #     else:
-    #         print("Your password is not in the list")
-    #############
-    
-    #version 3
-    # pattern = re.compile(string)
-    # content = open(path, encoding = "ISO-8859-1")                     
-    # for line in content:
-    #     for match in re.finditer(string, line):
-    #         print("Your password appears in the list")
-    #     else:
-    #         print("Your password is not in the list")
-    #############
-                            
-
-                       
+        else:
+        #It is needed so the loop doesn't keep printing the response
+            continue
+    f.close()
+                           
 def main():
     for i in range (5):
     #Let the user use the menu up to 5 times at a time
