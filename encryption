@@ -17,19 +17,19 @@ def menu():
     print("3) Encrypt phrase")
     print("4) Decrypt phrase")
     print("5) Quit\n")
-    ans = int(input("What would you like to do?: "))
+    ans = (input("What would you like to do?: "))
     #Ask user for input restricted to integers
     return ans
 
 #Triggers a response depending on the input
 def selection(ans):
-    if ans == 1 or ans == 2:
+    if ans == "1" or ans == "2":
     #encrypts or decrypts file
-        path = input("\nPlease provide file name: ")
+        path = input("\nPlease provide full path name: ")
         #ask user for the file path
         if check(path) == True:    
         #check files existence on path provided
-            if ans == 1:
+            if ans == "1":
             #encrypts file
                 gen()
                 key = load()
@@ -40,9 +40,9 @@ def selection(ans):
                 key = load()
                 dec_file(path, key)
         else: 
-            print("\nFile doesn't exist in this folder, please check the name")             
+            print("\nCouldn't find the file, please check the path")             
     
-    elif ans == 3:
+    elif ans == "3":
     #encrypts message    
         gen()
         enc_key = load()
@@ -50,14 +50,14 @@ def selection(ans):
         enc = en_string(enc_key)
         #encrypts message      
         
-    elif ans == 4:
+    elif ans == "4":
     #decrypts message
         enc_key = load()
         #set load into a variable        
         dec = dec_string(enc_key)
         #decrypts message
             
-    elif ans == 5:
+    elif ans == "5":
         exit()
         
     else:
