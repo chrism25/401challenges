@@ -6,32 +6,23 @@
 #Expected output: System status with timestamp
 #variables: answer
 
-from icmplib import ping, multiping, resolve, traceroute
+from icmplib import ping
 import datetime
 
-answer = ping("8.8.8.8", count=1, interval=2, timeout=8)
+stamp = datetime.datetime.now()
+#Puts a timestamp
+target = "8.8.8.8"
+answer = ping("8.8.8.8", count=1, interval=2, timeout=5)
+#count = number of pings to perform
+#interval = seconds between each sending packet
+#Timeout = maximum waiting time to receive a reply 
 
-if answer == 0:
-    print (target, "is up as", stamp)
-else:
-    print (target, "is down as", stamp)
+#Sends ping every 2 seconds and prints the status with a timestamp
+for host in answer:
+    if answer == 0:
+        print (target, "is up as", stamp)
+    else:
+        print (target, "is down as", stamp)
 
 
 
-
-
-
-
-#----alternative-----
-# import time
-# import datetime
-# import os
-
-# stamp = datetime.datetime.now()
-# target = "8.8.8.8"
-# answer = os.system("ping -c 1 " + target)
-
-# if answer == 0:
-#     print (target, "is up as", stamp)
-# else:
-#     print (target, "is down as", stamp)
