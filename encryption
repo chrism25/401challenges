@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 
-#Script Name: encryption
-#Purpose: Encrypt of data
+#Script Name: Encryption
+#Purpose: Encrypt data
 #Example usage: protect the integrity of data
 #Expected output: encrypted data
 #variables: ans, key, string, enc, dec, file, file_data, file_data
 
 from cryptography.fernet import Fernet
-import os.path
+import os.path, time
 
 def menu():
     print()
@@ -16,29 +16,41 @@ def menu():
     print("2) Decrypt File")
     print("3) Encrypt phrase")
     print("4) Decrypt phrase")
-    print("5) Quit\n")
+    print("5) Encrypt all files in folder")
+    print("6) Decrypt all files in folder")
+    print("7) Exit\n")
     ans = (input("What would you like to do?: "))
     #Ask user for input restricted to integers
     return ans
 
 #Triggers a response depending on the input
 def selection(ans):
-    if ans == "1" or ans == "2":
+    if ans == "1" or ans == "2" or ans == "5" or ans == "6":
     #encrypts or decrypts file
         path = input("\nPlease provide full path name: ")
         #ask user for the file path
         if check(path) == True:    
         #check files existence on path provided
             if ans == "1":
-            #encrypts file
                 gen()
                 key = load()
                 en_file(path, key)
                 #encrypts file
-            else:
-            #decrypts file
+            
+            elif ans == "2":
                 key = load()
                 dec_file(path, key)
+                
+            elif ans == "5":
+                gen()
+                key = load()
+                encrypter(path, key)
+                
+            else:
+                gen()
+                key = load()
+                decrypter(path, key) 
+                
         else: 
             print("\nCouldn't find the file, please check the path")             
     
@@ -56,8 +68,8 @@ def selection(ans):
         #set load into a variable        
         dec = dec_string(enc_key)
         #decrypts message
-            
-    elif ans == "5":
+              
+    elif ans == "7":
         exit()
         
     else:
@@ -99,6 +111,8 @@ def en_file(path, key):
     with open(path, "wb") as file:
         file.write(enc)
         #overwrites orginal with encrypted data
+    print ("\nEncrypting content...")
+    time.sleep(2)
     print ("\nHere is your secret: ", enc.decode())
      
 #Decrypts file        
@@ -110,6 +124,8 @@ def dec_file(path, key):
     #decrypts data and places is it into a variable
     with open(path, "wb") as file:
         file.write(dec)
+    print ("\nDecrypting content...")
+    time.sleep(2)
     print("\nUse with caution: ", dec.decode())
 
 #encrypts string        
@@ -128,6 +144,22 @@ def dec_string(key):
     dec = f.decrypt(string).decode()
     #decrypts message
     print ("Here you go: ", dec)
+
+#Encrypts all files within a directory
+def encrypter(path, key):
+    f = Fernet(key)
+    #begins fernet
+    for dir_path, dir_name, file_name in os.walk(path, topdown=False):
+    #Gives names to the option on os.walk for the path provided    
+        for name in file_name:    
+            en_file(os.path.join(dir_path, name), key)
+            # encrypts the files in the given path       
+            
+def decrypter(path, key):
+    f = Fernet(key)
+    for dir_path, dir_name, file_name in os.walk(path, topdown=False):  
+        for name in file_name:    
+            dec_file(os.path.join(dir_path, name), key)   
     
 #main function
 def main_func():
