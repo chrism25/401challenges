@@ -199,4 +199,8 @@ def main():
     #Let the user use the menu up to 5 times at a time
         choice = menu()
         action(choice)
+<<<<<<< HEAD
 main()
+=======
+main()
+>>>>>>> 03e6395708a04324184bc8f8b17065ce56f44b92
