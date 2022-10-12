@@ -9,15 +9,15 @@ import paramiko, time, socket, sys, zipfile, logging
 from logging.handlers import RotatingFileHandler
 
 #Variables for bruteforce SSH
-host = "192.168.18.73"
-user = "chris"
-pass_file = "/home/vmubuntu/wordlist/breaker.txt"
+host = "Please provide"
+user = "Please provide"
+pass_file = "wordlist"
 ###########################
 
 #Variables for bruteforce Zipfile
-wordlist = "/home/vmubuntu/wordlist/cracker.txt"
-path = "/home/vmubuntu/gits/401challengess/ziptest"
-destination = "/home/vmubuntu/gits/401challengess/here"
+wordlist = "Please provide"
+path = "zipfile_path"
+destination = "Please provide"
 ############################
 
 def menu():
