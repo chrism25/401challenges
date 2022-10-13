@@ -11,7 +11,7 @@ import ipaddress
 import random
 from scapy.all import ICMP, IP, sr1, TCP
 
-#target = "198.168.18.73"
+#target = "Please provide"
                 
 # Sends ping requests to identify status of the IPs                 
 def ping():
