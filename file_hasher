@@ -1,0 +1,37 @@
+#!/usr/bin/env python3
+
+#Script Name: malware_detector
+#Purpose: Look for a file in a directory and infom about the search
+#Example usage: To find files anywhere
+#Expected output: List of matches and result of scanned folders/file
+
+from pathlib import Path
+import hashlib, datetime
+
+####Stil in progress
+
+print ("\nHi, I'm going to help you hash some files")
+route = input("Please provide full path: ") 
+
+print("\nHere are the paths inside the directory:")
+for f in Path(route).rglob('*'):
+#List all paths recursively
+    print(f)
+
+#List files and hash them    
+def hasher(f):
+    hash = hashlib.md5()
+    #Places hash method md5 into an object
+    with open(f, "rb") as file:
+    #Opens path for reading in binary form    
+        for byte_chunk in iter(lambda: file.read(4096),b""):
+            hash.update(byte_chunk)
+            #Iterates over file, hashing 4096 bytes of binary code per operation
+            #Lambda always takes 0 arguments, which is what iter requires
+        print("\n", file)
+        print(hash.hexdigest())
+        print(datetime.datetime.now().strftime("%m/%d/%y - %H:%M:%S"))
+        #returns the message digest(hash) in hex format
+hasher(f)
+# for element in f:
+#     hasher(element)
