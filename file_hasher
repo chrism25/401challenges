@@ -1,37 +1,45 @@
 #!/usr/bin/env python3
 
-#Script Name: malware_detector
-#Purpose: Look for a file in a directory and infom about the search
-#Example usage: To find files anywhere
-#Expected output: List of matches and result of scanned folders/file
+#Script Name: file_hasher
+#Purpose: Hash files recursively
+#Example usage: Hash Sensitive data for integrity and confidentiality purposes
+#Expected output: List of files with details and hashes
 
 from pathlib import Path
-import hashlib, datetime
-
-####Stil in progress
+import hashlib, datetime, os
 
 print ("\nHi, I'm going to help you hash some files")
-route = input("Please provide full path: ") 
-
-print("\nHere are the paths inside the directory:")
-for f in Path(route).rglob('*'):
+route = input("Please provide the full path: ") 
+print("\nHere is the content of the directory:")
+#opens an empty list
+list = []
 #List all paths recursively
+for f in Path(route).rglob('*'):
     print(f)
+    #Select only files
+    if os.path.isfile(f):
+        #appends files to the list
+        list.append(f)
 
-#List files and hash them    
-def hasher(f):
-    hash = hashlib.md5()
+#Hashes file and provides details    
+def hasher(i):
     #Places hash method md5 into an object
-    with open(f, "rb") as file:
-    #Opens path for reading in binary form    
+    hash = hashlib.md5()
+    #Opens path for reading in binary form
+    with open(i, "rb") as file:
+        #Hashes files at 4096 bytes of binary code per operation
+        #Lambda always takes 0 arguments, which is what iter requires
         for byte_chunk in iter(lambda: file.read(4096),b""):
             hash.update(byte_chunk)
-            #Iterates over file, hashing 4096 bytes of binary code per operation
-            #Lambda always takes 0 arguments, which is what iter requires
-        print("\n", file)
+        
+        #Provides size of file     
+        print("\n"f"File: {i} with {i.stat().st_size} bytes size")
+        #Provides timestamp
+        print("Hashed on", datetime.datetime.now().strftime("%m/%d/%y - %H:%M:%S"))
+        #Returns the message digest(hash) in hex format
         print(hash.hexdigest())
-        print(datetime.datetime.now().strftime("%m/%d/%y - %H:%M:%S"))
-        #returns the message digest(hash) in hex format
-hasher(f)
-# for element in f:
-#     hasher(element)
+        
+
+#Iterates through every file in list
+for i in list:
+    hasher(i)
