@@ -1,0 +1,21 @@
+#!/usr/bin/env python3
+
+#Script Name: Banner_grabber
+#Purpose: Get information in a banner
+#Example usage: Gather intelligence
+#Expected output: Services running on target
+
+import os
+
+print("Hi, I'm going to help you grab a banner\n")
+target = input("Please provide URL or IP address: ")
+port = input("Which port would you like to use? ")
+
+print("\nLet's use Netcat first")
+os.system(f"nc {target} {port}")
+
+print("\nNow let's do the same but with Telnet")
+os.system(f"telnet {target} {port}")
+
+print("\nAnd let us finish it with Nmap")
+os.system(f"nmap -sV {target}")
