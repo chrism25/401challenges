@@ -12,10 +12,10 @@ target = input("Please provide URL or IP address: ")
 port = input("Which port would you like to use? ")
 
 print("\nLet's use Netcat first")
-os.system(f"nc {target} {port}")
+os.system(f"nc -w 1 {target} {port}")
 
 print("\nNow let's do the same but with Telnet")
-os.system(f"telnet {target} {port}")
+os.system(f"telnet -timeout 1 {target} {port}")
 
 print("\nAnd let us finish it with Nmap")
-os.system(f"nmap -sV {target}")
+os.system(f"nmap -timeout 1 -sV {target}")
