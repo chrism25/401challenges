@@ -1,0 +1,50 @@
+#!/usr/bin/env python3
+
+#Script Name: Cookie_grabber
+#Purpose: Get cookies and info from WebApp
+#Example usage: Get cookie session
+#Expected output: Cookie session and confirmation of access
+
+import requests, webbrowser, time
+
+targetsite = "http://www.whatarecookies.com/cookietest.asp"
+#Gets a response from the website
+response = requests.get(targetsite)
+#Sets cookie from the response into a variable
+cookie = response.cookies
+
+def bringforthcookiemonster(): # Because why not!
+    print('''
+
+              .---. .---.
+             :     : o   :    me want cookie!
+         _..-:   o :     :-.._    /
+     .-''  '  `---' `---' "   ``-.
+   .'   "   '  "  .    "  . '  "  `.
+  :   '.---.,,.,...,.,.,.,..---.  ' ;
+  `. " `.                     .' " .'
+   `.  '`.                   .' ' .'
+    `.    `-._           _.-' "  .'  .----.
+      `. "    '"--...--"'  . ' .'  .'  o   `.
+
+        ''')
+
+bringforthcookiemonster()
+#Prints the target and the cookie session
+print("The target site is " + targetsite)
+print(cookie, "\n")
+
+print("Sending request with the right credentials ...\n")
+time.sleep(2)
+#Sends a request with a cookie parameter
+response2 = requests.get(targetsite, cookie)
+#Opens html file for writing
+html = open("response.html" , "w")
+#writes request response to file
+html.write(str(response2))
+#Closes file
+html.close()
+print("Response has been saved to response.html")
+print("Let me open it for you")
+time.sleep(1)
+webbrowser.open_new_tab("response.html")
