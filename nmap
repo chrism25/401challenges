@@ -1,35 +1,52 @@
 #!/usr/bin/python3
 
+#TODO:Install python-nmap
 import nmap
 
 scanner = nmap.PortScanner()
 
-print("Nmap Automation Tool")
-print("--------------------")
+print("\n           Nmap Automation Tool")
+print("------------------------------------------\n")
 
-ip_addr = input("IP address to scan: ")
-print("The IP you entered is: ", ip_addr)
+#Ask user for target IP
+ip_addr = input("Please provide IP address to scan: ")
+print("Ready to scan new target:", ip_addr)
+#Returns object based on parameter "ip_addr"
 type(ip_addr)
 
-resp = input("""\nSelect scan to execute:
-                1) SYN ACK Scan
-                2) UDP Scan
-                3)     
-print("You have selected option: ", resp)
+#Ask user to choose a type of scan to execute
+resp = input("""\nWhich scan would you like to execute?
+    1) SYN ACK Scan
+    2) UDP Scan
+    3) OS Detection Scan\n""")
+print("\nwe will proceed with scan ", resp)
 
-range = '1-50'
-
+range = input("\nPlease provide a port range to scan(e.g. 30-122): ")
+print("")
 if resp == '1':
     print("Nmap Version: ", scanner.nmap_version())
+    #Sends TCP SYN packets to given IP and ports
     scanner.scan(ip_addr, range, '-v -sS')
+    #They print scan results, IP status state, protocols & open tcp ports
     print(scanner.scaninfo())
     print("Ip Status: ", scanner[ip_addr].state())
-    print(scanner[ip_addr].all_protocols())
+    print("Protocol: ", scanner[ip_addr].all_protocols())
     print("Open Ports: ", scanner[ip_addr]['tcp'].keys())
-elif resp == '2':
     
-    print("Please enter a valid option")
+elif resp == '2':
+    print("Nmap Version: ", scanner.nmap_version())
+    #UDP SYN connect scan
+    scanner.scan(ip_addr, range, '-v -sU')
+    #They print scan results, IP status state, protocols & open udp ports
+    print(scanner.scaninfo())
+    print("Ip Status: ", scanner[ip_addr].state())
+    print("Protocol: ", scanner[ip_addr].all_protocols())
+    print("Open Ports: ", scanner[ip_addr]['udp'].keys())
+    
 elif resp == '3':
-   
-elif resp >= '4':
-    print("Please enter a valid option")
+    print("Nmap Version: ", scanner.nmap_version())
+    #Looks for all OS related information
+    print(scanner.scan(ip_addr, arguments='-O')['scan'][ip_addr]['osmatch'][0])
+    
+elif resp != '4':
+    print("That's not a valid scan option")
